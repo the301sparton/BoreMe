@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "461320297303",
+    "firebase_url": "https://boreme-e5997.firebaseio.com",
+    "project_id": "boreme-e5997",
+    "storage_bucket": "boreme-e5997.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461320297303:android:6bb4154dcdfc9b69",
+        "android_client_info": {
+          "package_name": "com.example.boreme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "461320297303-lc35lpn2gqvdkq18ilnkj00vo19mvoha.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.boreme",
+            "certificate_hash": "615025dfe546706eaddb11dcde96de77db4dae82"
+          }
+        },
+        {
+          "client_id": "461320297303-7cc9uqaqsd93ustjbubrkmapclghm0c5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAB3xdszILmS9ZxgqIT850TRD5ENsoqO9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "461320297303-7cc9uqaqsd93ustjbubrkmapclghm0c5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
