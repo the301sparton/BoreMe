@@ -15,6 +15,8 @@ import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
@@ -31,6 +33,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MainActivity extends AppCompatActivity {
     CircleImageView meImg;
     TextView displayName, emailId;
+
+    FirebaseDatabase database;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
         meImg = findViewById(R.id.profile_image);
         displayName = findViewById(R.id.displayName);
         emailId = findViewById(R.id.emailId);
+
+
+        database = FirebaseDatabase.getInstance();
+
 
         List<AuthUI.IdpConfig> providers = Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build());
 
@@ -68,6 +77,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("url", String.valueOf(user.getPhotoUrl()));
                     displayName.setText(user.getDisplayName());
                     emailId.setText(user.getEmail());
+
+                    DatabaseReference meAsUser = database.getReference("users").child(user.getUid());
+                    meAsUser.child("displayName").setValue(user.getDisplayName());
+                    meAsUser.child("photoURI").setValue(String.valueOf(user.getPhotoUrl()));
+                    meAsUser.child("emailId").setValue(user.getEmail());
+
                     Picasso.get().load(user.getPhotoUrl()).into(meImg);
                 }
                 Toast.makeText(getApplicationContext(),"Sign In successful :)", Toast.LENGTH_SHORT).show();
