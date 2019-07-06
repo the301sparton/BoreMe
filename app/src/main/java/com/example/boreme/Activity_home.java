@@ -66,7 +66,7 @@ public class Activity_home extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO start activity to search users
+                startActivity(new Intent(Activity_home.this, Activity_newConvoPicker.class));
             }
         });
     }
