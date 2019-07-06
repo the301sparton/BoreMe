@@ -2,8 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/round_border"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="10dip"
+    android:layout_margin="3dp">
 
     <!--  ListRow Left sied Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
@@ -27,10 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/thumbnail"
         android:layout_toRightOf="@+id/thumbnail"
-        android:text="Rihanna Love the way lie"
-        android:textColor="#040404"
-        android:typeface="sans"
-        android:textSize="15dip"
+        android:fontFamily="@font/josefin_sans"
+        android:textSize="22sp"
         android:textStyle="bold"/>
 
     <!-- Artist Name -->
@@ -40,16 +40,16 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/picker_displayName"
         android:textColor="#343434"
-        android:textSize="10dip"
+        android:textSize="18sp"
+        android:fontFamily="@font/josefin_sans"
         android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:text="Just gona stand there and ..." />
+        android:layout_toRightOf="@+id/thumbnail"/>
 
     <!-- Rightend Arrow -->
     <ImageView android:layout_width="wrap_content"
+        android:id="@+id/lv_arrow"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"/>
-
 </RelativeLayout>
