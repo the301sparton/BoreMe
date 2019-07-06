@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,12 +34,13 @@ public class Activity_newConvoPicker extends AppCompatActivity {
     FirebaseDatabase database;
     LinearLayout pg_bar;
     ListView listView;
-
+    ArrayList<DTO> list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_new_convo_picker);
-        final ArrayList<DTO> list = new ArrayList<DTO>();
+
+        list = new ArrayList<DTO>();
         pg_bar = findViewById(R.id.prog_loader);
         listView = findViewById(R.id.list);
 
@@ -49,6 +52,7 @@ public class Activity_newConvoPicker extends AppCompatActivity {
                 pg_bar.setVisibility(View.GONE);
                 for (DataSnapshot user : dataSnapshot.getChildren()){
                     DTO currentUser = new DTO();
+                    currentUser.setUid(Objects.requireNonNull(user.getKey()));
                     currentUser.setDisplayName(Objects.requireNonNull(user.child("displayName").getValue()).toString());
                     currentUser.setPhotoUri(Objects.requireNonNull(user.child("photoURI").getValue()).toString());
                     currentUser.setEmailId(Objects.requireNonNull(user.child("emailId").getValue()).toString());
@@ -56,6 +60,7 @@ public class Activity_newConvoPicker extends AppCompatActivity {
                 }
                 ListAdapter listAdapter = new ListAdapter(list,Activity_newConvoPicker.this);
                 listView.setAdapter(listAdapter);
+                listViewClickListener();
             }
 
             @Override
@@ -64,10 +69,21 @@ public class Activity_newConvoPicker extends AppCompatActivity {
             }
         });
     }
+
+     void listViewClickListener(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(Activity_newConvoPicker.this, Activity_chat.class);
+                intent.putExtra("inFrontUser",list.get(i).getUid());
+                startActivity(intent);
+            }
+        });
+    }
 }
 
 class DTO implements Serializable{
-    private String displayName, photoUri, emailId;
+    private String displayName, photoUri, emailId, uid;
 
     public String getDisplayName() {
         return displayName;
@@ -91,6 +107,14 @@ class DTO implements Serializable{
 
     public void setEmailId(String emailId) {
         this.emailId = emailId;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }
 

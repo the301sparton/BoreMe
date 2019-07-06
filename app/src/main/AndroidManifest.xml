@@ -16,8 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Activity_newConvoPicker"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".Activity_chat"></activity>
+        <activity
+            android:name=".Activity_newConvoPicker"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity_home"
             android:theme="@style/AppTheme.NoActionBar">
