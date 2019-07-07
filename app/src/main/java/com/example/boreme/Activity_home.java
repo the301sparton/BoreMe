@@ -44,15 +44,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -112,6 +120,13 @@ public class Activity_home extends AppCompatActivity {
     }
 
     @Override
+    protected void onRestart() {
+        lastMsg = null;
+        setDialogAdaptor();
+        super.onRestart();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_activity_home, menu);
@@ -124,7 +139,8 @@ public class Activity_home extends AppCompatActivity {
             startActivity(new Intent(Activity_home.this, Activity_Encrpt.class));
         }
         else if(item.getItemId() == R.id.about){
-            startActivity(new Intent(Activity_home.this, activity_about.class));
+            startActivity(new Intent(Activity_home.this, activity_about.class
+            ));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -154,7 +170,7 @@ public class Activity_home extends AppCompatActivity {
                     Picasso.get().load(user.getPhotoUrl()).into(meImg);
                 }
                 currentUser = user;
-                genereteNewLey();
+                genereteNewKey();
                 setDialogAdaptor();
                 Toast.makeText(getApplicationContext(), "Sign In successful :)", Toast.LENGTH_SHORT).show();
                 // ...
@@ -207,6 +223,9 @@ public class Activity_home extends AppCompatActivity {
                         lastMsg.setText("No new Message.");
                         unReadCount = 0;
                     }
+                    else{
+                        lastMsg.setText("Encrypted MSG: "+lastMsg.getText());
+                    }
 
 
                     DefaultDialog thisDialog = new DefaultDialog(id, convoName, convoImg, lastMsg, convoUser, unReadCount);
@@ -237,7 +256,7 @@ public class Activity_home extends AppCompatActivity {
     }
 
 
-    private void genereteNewLey(){
+    private void genereteNewKey(){
 
         if(preferences.getString("myKey","").contentEquals("")){
             try {
@@ -261,4 +280,5 @@ public class Activity_home extends AppCompatActivity {
         keygen.init(256);
         return secret = keygen.generateKey();
     }
+
 }

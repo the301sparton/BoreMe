@@ -130,13 +130,16 @@ public class Activity_chat extends AppCompatActivity {
                     message.setText(Base64.encodeToString(cyperText,0));
                     message.setCreatedAt(new Date());
                     message.setAuthor(author);
-                    adapter.addToStart(message, true);
+
                     DatabaseReference reference = database.getReference("messages").child(thatUserId).child(author.getId());
                     String nxtMsg = reference.push().getKey();
                     if (nxtMsg != null) {
                         reference.child("messages").child(nxtMsg).setValue(message);
                         reference.child("author").child("lol").setValue(author);
                     }
+                    message.setText(String.valueOf(input));
+                    adapter.addToStart(message, true);
+
                     i++;
 
                 } catch (NoSuchAlgorithmException e) {
