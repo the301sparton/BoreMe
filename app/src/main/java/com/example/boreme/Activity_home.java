@@ -1,6 +1,7 @@
 package com.example.boreme;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.firebase.ui.auth.AuthUI;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,6 +39,7 @@ public class Activity_home extends AppCompatActivity {
     CircleImageView meImg;
     TextView displayName, emailId;
     FirebaseDatabase database;
+    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,16 +54,21 @@ public class Activity_home extends AppCompatActivity {
         emailId = findViewById(R.id.emailId);
 
         database = FirebaseDatabase.getInstance();
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         List<AuthUI.IdpConfig> providers = Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build());
 
 // Create and launch sign-in intent
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .build(),
-                200);
+        if(!preferences.getBoolean("isSignedIn",false)){
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    200);
+            preferences.edit().putBoolean("isSignedIn", true).apply();
+        }
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

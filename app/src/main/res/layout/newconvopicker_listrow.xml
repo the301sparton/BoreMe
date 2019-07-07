@@ -2,10 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/round_border"
+    android:background="#FDEDEC"
     android:orientation="horizontal"
     android:padding="10dip"
-    android:layout_margin="3dp">
+    android:layout_marginTop="15dp">
 
     <!--  ListRow Left sied Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
@@ -17,8 +17,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/picker_displayImg"
-            android:layout_width="70dp"
-            android:layout_height="70dp" />
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
 
     </LinearLayout>
 
@@ -31,7 +31,7 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:fontFamily="@font/josefin_sans"
         android:textSize="22sp"
-        android:textStyle="bold"/>
+        android:textStyle="italic"/>
 
     <!-- Artist Name -->
     <TextView
