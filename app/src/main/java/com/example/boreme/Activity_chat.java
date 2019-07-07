@@ -80,6 +80,7 @@ public class Activity_chat extends AppCompatActivity {
             } catch (InvalidKeySpecException e) {
                 e.printStackTrace();
             }
+            preferences.edit().putString("myKey", Base64.encodeToString(secretKey.getEncoded(),0)).apply();
         }
         else{
             String keyStr = preferences.getString("myKey","");
