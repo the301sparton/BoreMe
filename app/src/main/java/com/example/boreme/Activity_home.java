@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -43,11 +44,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -114,9 +120,6 @@ public class Activity_home extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.signOut) {
-            signOutUser();
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -145,6 +148,7 @@ public class Activity_home extends AppCompatActivity {
                     Picasso.get().load(user.getPhotoUrl()).into(meImg);
                 }
                 currentUser = user;
+                genereteNewLey();
                 setDialogAdaptor();
                 Toast.makeText(getApplicationContext(), "Sign In successful :)", Toast.LENGTH_SHORT).show();
                 // ...
@@ -154,16 +158,6 @@ public class Activity_home extends AppCompatActivity {
         }
     }
 
-    public void signOutUser() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    public void onComplete(@NonNull Task<Void> task) {
-                        finish();
-                    }
-                });
-        preferences.edit().putBoolean("isSignedIn", false).apply();
-    }
 
 
     private void setDialogAdaptor() {
@@ -234,5 +228,31 @@ public class Activity_home extends AppCompatActivity {
 
         });
 
+    }
+
+
+    private void genereteNewLey(){
+
+        if(preferences.getString("myKey","").contentEquals("")){
+            try {
+              SecretKey secretKey = generateKey();
+                String keyStr = Base64.encodeToString(secretKey.getEncoded(),0);
+                database.getReference("users").child(currentUser.getUid()).child("key").setValue(keyStr);
+                preferences.edit().putString("myKey", keyStr).apply();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (InvalidKeySpecException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static SecretKey generateKey()
+            throws NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        SecretKey secret;
+        KeyGenerator keygen = KeyGenerator.getInstance("AES");
+        keygen.init(256);
+        return secret = keygen.generateKey();
     }
 }

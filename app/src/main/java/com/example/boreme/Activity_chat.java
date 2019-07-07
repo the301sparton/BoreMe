@@ -72,21 +72,15 @@ public class Activity_chat extends AppCompatActivity {
         setContentView(R.layout.layout_chat);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if(preferences.getString("myKey","").equals("")){
-            try {
-                secretKey = generateKey();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (InvalidKeySpecException e) {
-                e.printStackTrace();
-            }
-            preferences.edit().putString("myKey", Base64.encodeToString(secretKey.getEncoded(),0)).apply();
-        }
-        else{
+        database = FirebaseDatabase.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+
+
             String keyStr = preferences.getString("myKey","");
             byte[] decodedKey = Base64.decode(keyStr,0);
             secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-        }
+
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -102,8 +96,8 @@ public class Activity_chat extends AppCompatActivity {
         messagesList = findViewById(R.id.messagesList);
         inputView = findViewById(R.id.msgBox);
 
-        database = FirebaseDatabase.getInstance();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+
 
         author = new Author();
         author.setName(currentUser.getDisplayName());
@@ -125,41 +119,39 @@ public class Activity_chat extends AppCompatActivity {
             @Override
             public boolean onSubmit(CharSequence input) {
                 //validate and send message
-                Message message = new Message();
-                message.setId(String.valueOf(i));
-                message.setText(String.valueOf(input));
-                message.setCreatedAt(new Date());
-                message.setAuthor(author);
-                adapter.addToStart(message, true);
-                DatabaseReference reference = database.getReference("messages").child(thatUserId).child(author.getId());
-                String nxtMsg = reference.push().getKey();
-                if (nxtMsg != null) {
-                    reference.child("messages").child(nxtMsg).setValue(message);
-                    reference.child("author").child("lol").setValue(author);
-                }
-                i++;
-                try {
-                    byte[] cyperText = encryptMsg(String.valueOf(input), secretKey);
-                    String plantext = decryptMsg(cyperText, secretKey);
 
-                    Log.i("EncryptKey:", Base64.encodeToString(secretKey.getEncoded(),0));
-                    Log.i("cypherText", String.valueOf(cyperText));
-                    Log.i("platText", plantext);
+                byte[] cyperText = new byte[0];
+                try {
+                    //Encrypted Message
+                    cyperText = encryptMsg(String.valueOf(input), secretKey);
+
+                    Message message = new Message();
+                    message.setId(String.valueOf(i));
+                    message.setText(Base64.encodeToString(cyperText,0));
+                    message.setCreatedAt(new Date());
+                    message.setAuthor(author);
+                    adapter.addToStart(message, true);
+                    DatabaseReference reference = database.getReference("messages").child(thatUserId).child(author.getId());
+                    String nxtMsg = reference.push().getKey();
+                    if (nxtMsg != null) {
+                        reference.child("messages").child(nxtMsg).setValue(message);
+                        reference.child("author").child("lol").setValue(author);
+                    }
+                    i++;
+
                 } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeyException e) {
                     e.printStackTrace();
                 } catch (NoSuchPaddingException e) {
                     e.printStackTrace();
-                } catch (BadPaddingException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedEncodingException e) {
+                } catch (InvalidKeyException e) {
                     e.printStackTrace();
                 } catch (InvalidParameterSpecException e) {
                     e.printStackTrace();
                 } catch (IllegalBlockSizeException e) {
                     e.printStackTrace();
-                } catch (InvalidAlgorithmParameterException e) {
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
 
@@ -167,23 +159,68 @@ public class Activity_chat extends AppCompatActivity {
             }
         });
 
-        final DatabaseReference myMsgs = database.getReference("messages").child(author.getId()).child(thatUserId);
-        DatabaseReference authorRef = myMsgs.child("author");
-        authorRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        //Get His Key
+        final DatabaseReference hisKey = database.getReference("users").child(thatUserId).child("key");
+
+        hisKey.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                thatAuthor = dataSnapshot.child("lol").getValue(Author.class);
-                myMsgs.child("messages").addValueEventListener(new ValueEventListener() {
+            public void onDataChange(@NonNull DataSnapshot hisKeySnap) {
+
+                byte[] decodedKey = Base64.decode(hisKeySnap.getValue(String.class),0);
+                final SecretKey hisSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+                Log.i("HisKey", String.valueOf(decodedKey));
+
+                final DatabaseReference myMsgs = database.getReference("messages").child(author.getId()).child(thatUserId);
+                DatabaseReference authorRef = myMsgs.child("author");
+                authorRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot dataSnap : dataSnapshot.getChildren()){
-                            Message message = dataSnap.getValue(Message.class);
-                            if (message != null) {
-                                message.setAuthor(thatAuthor);
-                                adapter.addToStart(message,true);
+                        thatAuthor = dataSnapshot.child("lol").getValue(Author.class);
+                        myMsgs.child("messages").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot dataSnap : dataSnapshot.getChildren()){
+
+                                    try {
+                                        Date dateOfMsg = dataSnap.child("createdAt").getValue(Date.class);
+                                        Message message = new Message();
+                                        message.setCreatedAt(dateOfMsg);
+                                        message.setId(dataSnap.child("id").getValue(String.class));
+                                        String cypherMsg = dataSnap.child("text").getValue(String.class);
+                                        Log.i("gotMsg",cypherMsg);
+                                        message.setText(decryptMsg(Base64.decode(cypherMsg,0),hisSecretKey));
+                                        message.setAuthor(thatAuthor);
+                                        adapter.addToStart(message,true);
+
+                                    } catch (NoSuchPaddingException e) {
+                                        e.printStackTrace();
+                                    } catch (NoSuchAlgorithmException e) {
+                                        e.printStackTrace();
+                                    } catch (InvalidParameterSpecException e) {
+                                        e.printStackTrace();
+                                    } catch (InvalidAlgorithmParameterException e) {
+                                        e.printStackTrace();
+                                    } catch (InvalidKeyException e) {
+                                        e.printStackTrace();
+                                    } catch (BadPaddingException e) {
+                                        e.printStackTrace();
+                                    } catch (IllegalBlockSizeException e) {
+                                        e.printStackTrace();
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                    }
+
+
+                                }
+                                dataSnapshot.getRef().removeValue();
                             }
-                        }
-                       dataSnapshot.getRef().removeValue();
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                     }
 
                     @Override
@@ -198,6 +235,11 @@ public class Activity_chat extends AppCompatActivity {
 
             }
         });
+
+
+
+
+
 
 
 
