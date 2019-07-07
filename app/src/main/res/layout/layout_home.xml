@@ -41,6 +41,7 @@
 
                     <TextView
                         android:id="@+id/displayName"
+                        android:textColor="@color/colorAccent"
                         android:fontFamily="@font/josefin_sans"
                         android:layout_height="0dp"
                         android:layout_width="match_parent"
@@ -50,6 +51,7 @@
                     <TextView
                         android:fontFamily="@font/josefin_sans"
                         android:id="@+id/emailId"
+                        android:textColor="@color/colorAccent"
                         android:gravity="top"
                         android:textSize="12sp"
                         android:layout_height="0dp"

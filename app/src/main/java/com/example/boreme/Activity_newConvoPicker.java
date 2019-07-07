@@ -60,7 +60,6 @@ public class Activity_newConvoPicker extends AppCompatActivity {
                 }
                 ListAdapter listAdapter = new ListAdapter(list,Activity_newConvoPicker.this);
                 listView.setAdapter(listAdapter);
-                listView.setDivider(null);
                 listViewClickListener();
             }
 

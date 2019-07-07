@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -37,6 +38,13 @@ public class Activity_chat extends AppCompatActivity {
     int i=0;
 
     String thatUserId;
+
+    @Override
+    public void onBackPressed() {
+        //startActivity(new Intent(Activity_chat.this, Activity_newConvoPicker.class));
+        finish();
+        super.onBackPressed();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
