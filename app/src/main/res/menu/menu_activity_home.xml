@@ -2,6 +2,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.boreme.Activity_home">
+
+    <item
+        android:id="@+id/about"
+        android:orderInCategory="100"
+        android:title="About"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/encryption"
+        android:orderInCategory="100"
+        android:title="Encryption"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/settings"
+        android:orderInCategory="100"
+        android:title="Settings"
+        app:showAsAction="never" />
     <item
         android:id="@+id/signOut"
         android:orderInCategory="100"

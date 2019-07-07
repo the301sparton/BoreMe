@@ -5,7 +5,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -24,10 +27,26 @@ import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.Date;
+import java.util.ResourceBundle;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Activity_chat extends AppCompatActivity {
 
+    SharedPreferences preferences;
     MessagesList messagesList;
     MessageInput inputView;
     MessagesListAdapter<Message> adapter;
@@ -35,6 +54,7 @@ public class Activity_chat extends AppCompatActivity {
     FirebaseUser currentUser;
     FirebaseDatabase database;
     Author thatAuthor;
+    SecretKey secretKey;
     int i=0;
 
     String thatUserId;
@@ -51,6 +71,21 @@ public class Activity_chat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_chat);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        if(preferences.getString("myKey","").equals("")){
+            try {
+                secretKey = generateKey();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (InvalidKeySpecException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            String keyStr = preferences.getString("myKey","");
+            byte[] decodedKey = Base64.decode(keyStr,0);
+            secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+        }
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -102,6 +137,31 @@ public class Activity_chat extends AppCompatActivity {
                     reference.child("author").child("lol").setValue(author);
                 }
                 i++;
+                try {
+                    byte[] cyperText = encryptMsg(String.valueOf(input), secretKey);
+                    String plantext = decryptMsg(cyperText, secretKey);
+
+                    Log.i("EncryptKey:", Base64.encodeToString(secretKey.getEncoded(),0));
+                    Log.i("cypherText", String.valueOf(cyperText));
+                    Log.i("platText", plantext);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (NoSuchPaddingException e) {
+                    e.printStackTrace();
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (InvalidParameterSpecException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                }
+
                 return true;
             }
         });
@@ -141,5 +201,38 @@ public class Activity_chat extends AppCompatActivity {
 
 
     }
+
+    public static SecretKey generateKey()
+            throws NoSuchAlgorithmException, InvalidKeySpecException
+    {
+        SecretKey secret;
+        KeyGenerator keygen = KeyGenerator.getInstance("AES");
+        keygen.init(256);
+        return secret = keygen.generateKey();
+    }
+
+    public static byte[] encryptMsg(String message, SecretKey secret)
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException
+    {
+        /* Encrypt the message. */
+        Cipher cipher = null;
+        cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secret);
+        byte[] cipherText = cipher.doFinal(message.getBytes("UTF-8"));
+        return cipherText;
+    }
+
+    public static String decryptMsg(byte[] cipherText, SecretKey secret)
+            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidParameterSpecException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException
+    {
+        /* Decrypt the message, given derived encContentValues and initialization vector. */
+        Cipher cipher = null;
+        cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secret);
+        String decryptString = new String(cipher.doFinal(cipherText), "UTF-8");
+        return decryptString;
+    }
+
+
 }
 
