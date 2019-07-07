@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activity_Encrpt">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="@color/colorPrimary"
+            android:layout_height="80dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:fontFamily="@font/josefin_sans"
+                android:textColor="@color/colorAccent"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:text="About Encryption System"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:fontFamily="@font/josefin_sans"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"
+            android:padding="20dp"
+            android:layout_height="wrap_content"
+            android:text="BoreMe uses an end to end encryption standard known as AES 256."/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"></LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:fontFamily="@font/josefin_sans"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"
+            android:padding="20dp"
+            android:layout_height="wrap_content"
+            android:text="Messages are stored on server as cipherTexts so that even the DB Admin can not take a look on your conversations."/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"></LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:fontFamily="@font/josefin_sans"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"
+            android:padding="20dp"
+            android:layout_height="wrap_content"
+            android:text="Messages are automatically deleted from server as soon as they are delivered to intended recipient."/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"></LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:fontFamily="@font/josefin_sans"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:layout_marginTop="30dp"
+            android:padding="20dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:text="Your Key"/>
+
+        <TextView
+            android:id="@+id/encrptKey"
+            android:layout_width="match_parent"
+            android:fontFamily="@font/josefin_sans"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:paddingLeft="20dp"
+            android:textStyle="italic|bold"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+</ScrollView>

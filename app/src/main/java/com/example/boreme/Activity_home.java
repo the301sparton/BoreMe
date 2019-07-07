@@ -120,6 +120,12 @@ public class Activity_home extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.encryption){
+            startActivity(new Intent(Activity_home.this, Activity_Encrpt.class));
+        }
+        else if(item.getItemId() == R.id.about){
+            startActivity(new Intent(Activity_home.this, activity_about.class));
+        }
         return super.onOptionsItemSelected(item);
     }
 
