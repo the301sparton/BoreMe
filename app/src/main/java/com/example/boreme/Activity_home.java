@@ -33,10 +33,13 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -211,6 +214,8 @@ public class Activity_home extends AppCompatActivity {
                     finalConvoList.add(thisDialog);
                 }
                 dialogsListAdapter.setItems(finalConvoList);
+                LinearLayout progressBar = findViewById(R.id.holder);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override

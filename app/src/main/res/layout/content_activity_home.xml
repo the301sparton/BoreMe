@@ -8,9 +8,35 @@
     tools:context=".Activity_home"
     tools:showIn="@layout/layout_home">
 
-    <com.stfalcon.chatkit.dialogs.DialogsList
-        android:id="@+id/dialogsList"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/holder"
+            android:visibility="visible"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <ProgressBar
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <com.stfalcon.chatkit.dialogs.DialogsList
+            android:id="@+id/dialogsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+
+
+
+
+
+
+
 
 </androidx.core.widget.NestedScrollView>
