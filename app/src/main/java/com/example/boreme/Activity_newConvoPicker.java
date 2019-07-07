@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +37,7 @@ public class Activity_newConvoPicker extends AppCompatActivity {
     LinearLayout pg_bar;
     ListView listView;
     ArrayList<DTO> list;
+    FirebaseUser currentUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,7 @@ public class Activity_newConvoPicker extends AppCompatActivity {
         list = new ArrayList<DTO>();
         pg_bar = findViewById(R.id.prog_loader);
         listView = findViewById(R.id.list);
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         database = FirebaseDatabase.getInstance();
         DatabaseReference usersRef = database.getReference("users");
@@ -51,12 +55,14 @@ public class Activity_newConvoPicker extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 pg_bar.setVisibility(View.GONE);
                 for (DataSnapshot user : dataSnapshot.getChildren()){
-                    DTO currentUser = new DTO();
-                    currentUser.setUid(Objects.requireNonNull(user.getKey()));
-                    currentUser.setDisplayName(Objects.requireNonNull(user.child("displayName").getValue()).toString());
-                    currentUser.setPhotoUri(Objects.requireNonNull(user.child("photoURI").getValue()).toString());
-                    currentUser.setEmailId(Objects.requireNonNull(user.child("emailId").getValue()).toString());
-                    list.add(currentUser);
+                    if(!Objects.equals(user.getKey(), currentUser.getUid())){
+                        DTO currentUser = new DTO();
+                        currentUser.setUid(Objects.requireNonNull(user.getKey()));
+                        currentUser.setDisplayName(Objects.requireNonNull(user.child("displayName").getValue()).toString());
+                        currentUser.setPhotoUri(Objects.requireNonNull(user.child("photoURI").getValue()).toString());
+                        currentUser.setEmailId(Objects.requireNonNull(user.child("emailId").getValue()).toString());
+                        list.add(currentUser);
+                    }
                 }
                 ListAdapter listAdapter = new ListAdapter(list,Activity_newConvoPicker.this);
                 listView.setAdapter(listAdapter);

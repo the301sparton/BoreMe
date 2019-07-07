@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -88,6 +89,7 @@ public class Activity_home extends AppCompatActivity {
             displayName.setText(currentUser.getDisplayName());
             emailId.setText(currentUser.getEmail());
             Picasso.get().load(currentUser.getPhotoUrl()).into(meImg);
+            setDialogAdaptor();
         }
 
 
@@ -98,8 +100,6 @@ public class Activity_home extends AppCompatActivity {
                 startActivity(new Intent(Activity_home.this, Activity_newConvoPicker.class));
             }
         });
-
-        setDialogAdaptor();
     }
 
     @Override
@@ -142,6 +142,7 @@ public class Activity_home extends AppCompatActivity {
                     Picasso.get().load(user.getPhotoUrl()).into(meImg);
                 }
                 currentUser = user;
+                setDialogAdaptor();
                 Toast.makeText(getApplicationContext(), "Sign In successful :)", Toast.LENGTH_SHORT).show();
                 // ...
             } else {
@@ -195,6 +196,15 @@ public class Activity_home extends AppCompatActivity {
                             lastMsg.setAuthor(convoAuthor);
                     }
 
+                    if(lastMsg == null){
+                        lastMsg = new Message();
+                        lastMsg.setCreatedAt(new Date());
+                        lastMsg.setId("1");
+                        lastMsg.setAuthor(convoAuthor);
+                        lastMsg.setText("No new Message.");
+                        unReadCount = 0;
+                    }
+
 
                     DefaultDialog thisDialog = new DefaultDialog(id, convoName, convoImg, lastMsg, convoUser, unReadCount);
                    // Log.i("convoName", lastMsg.getText());
@@ -207,6 +217,16 @@ public class Activity_home extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+        });
+
+
+        dialogsListAdapter.setOnDialogClickListener(new DialogsListAdapter.OnDialogClickListener<IDialog>() {
+            @Override
+            public void onDialogClick(IDialog dialog) {
+                startActivity(new Intent(Activity_home.this, Activity_chat.class).putExtra("inFrontUser",dialog.getId()));
+            }
+
+
         });
 
     }
