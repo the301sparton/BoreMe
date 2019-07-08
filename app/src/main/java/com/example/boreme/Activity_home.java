@@ -173,13 +173,13 @@ public class Activity_home extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 200) {
-            preferences.edit().putBoolean("isSignedIn", true).apply();
+
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+                preferences.edit().putBoolean("isSignedIn", true).apply();
 
                 if (user != null) {
                     onStart();
