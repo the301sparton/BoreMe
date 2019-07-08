@@ -86,7 +86,7 @@ public class CustomTabActivityHelper implements ServiceConnectionCallback {
         String packageName = CustomTabsHelper.getPackageNameToUse(activity);
         if (packageName == null) return;
 
-        mConnection = new ServiceConnection(this);
+        mConnection = new ServiceConnectionTAB(this);
         CustomTabsClient.bindCustomTabsService(activity, packageName, mConnection);
     }
 

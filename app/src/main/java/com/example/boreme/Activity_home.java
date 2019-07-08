@@ -1,16 +1,29 @@
 package com.example.boreme;
 
-import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.util.Base64;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,46 +34,17 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.commons.models.IDialog;
-import com.stfalcon.chatkit.commons.models.IMessage;
 import com.stfalcon.chatkit.commons.models.IUser;
 import com.stfalcon.chatkit.dialogs.DialogsList;
 import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.preference.PreferenceManager;
-import android.util.Base64;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -73,6 +57,46 @@ public class Activity_home extends AppCompatActivity {
     SharedPreferences preferences;
     FirebaseUser currentUser;
     DialogsList dialogsList;
+
+    BoundService mBoundService;
+    boolean mServiceBound = false;
+
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServiceBound = false;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            BoundService.MyBinder myBinder = (BoundService.MyBinder) service;
+            mBoundService = myBinder.getService();
+            mServiceBound = true;
+        }
+    };
+    @Override
+    protected void onStart() {
+
+        Log.v("loginState", String.valueOf(preferences.getBoolean("isSignedIn",false)));
+        if(preferences.getBoolean("isSignedIn",false) && !mServiceBound) {
+            Intent intent = new Intent(this, BoundService.class);
+            startService(intent);
+            bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+            preferences.edit().putBoolean("isServiceConnected",true).apply();
+        }
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mServiceBound) {
+            unbindService(mServiceConnection);
+            mServiceBound = false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +113,7 @@ public class Activity_home extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
+        Log.v("loginStateOnCreate", String.valueOf(preferences.getBoolean("isSignedIn",false)));
         List<AuthUI.IdpConfig> providers = Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build());
 
 // Create and launch sign-in intent
@@ -100,7 +124,6 @@ public class Activity_home extends AppCompatActivity {
                             .setAvailableProviders(providers)
                             .build(),
                     200);
-            preferences.edit().putBoolean("isSignedIn", true).apply();
         } else {
             currentUser = FirebaseAuth.getInstance().getCurrentUser();
             displayName.setText(currentUser.getDisplayName());
@@ -150,6 +173,7 @@ public class Activity_home extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 200) {
+            preferences.edit().putBoolean("isSignedIn", true).apply();
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
@@ -158,6 +182,7 @@ public class Activity_home extends AppCompatActivity {
 
 
                 if (user != null) {
+                    onStart();
                     Log.i("url", String.valueOf(user.getPhotoUrl()));
                     displayName.setText(user.getDisplayName());
                     emailId.setText(user.getEmail());
