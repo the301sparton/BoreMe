@@ -45,6 +45,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class Activity_chat extends AppCompatActivity {
 
     SharedPreferences preferences;
@@ -112,6 +114,8 @@ public class Activity_chat extends AppCompatActivity {
         });
 
         final TextView hisTypingState = findViewById(R.id.hisTypingState);
+
+
 
         DatabaseReference hisTypingRef = database.getReference("messages").child(currentUser.getUid()).child(thatUserId).child("typingState");
         hisTypingRef.addValueEventListener(new ValueEventListener() {
@@ -198,15 +202,21 @@ public class Activity_chat extends AppCompatActivity {
 
 
         //Get His Key
-        final DatabaseReference hisKey = database.getReference("users").child(thatUserId).child("key");
+        final DatabaseReference hisKey = database.getReference("users").child(thatUserId);
 
         hisKey.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot hisKeySnap) {
 
-                byte[] decodedKey = Base64.decode(hisKeySnap.getValue(String.class),0);
+                CircleImageView thatUserImg = findViewById(R.id.hisImg);
+                Picasso.get().load(hisKeySnap.child("photoURI").getValue(String.class)).into(thatUserImg);
+                TextView hisName = findViewById(R.id.hisName);
+                hisName.setText(hisKeySnap.child("displayName").getValue(String.class));
+
+
+
+                byte[] decodedKey = Base64.decode(hisKeySnap.child("key").getValue(String.class),0);
                 final SecretKey hisSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-                Log.i("HisKey", String.valueOf(decodedKey));
 
                 final DatabaseReference myMsgs = database.getReference("messages").child(author.getId()).child(thatUserId);
                 DatabaseReference authorRef = myMsgs.child("author");

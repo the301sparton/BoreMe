@@ -32,7 +32,6 @@
                 android:textColor="@color/colorAccent"
                 android:fontFamily="@font/josefin_sans"
                 android:textSize="22sp"
-                android:text="Chaitanya Deshpande"
                 android:layout_gravity="center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
