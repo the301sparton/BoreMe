@@ -29,6 +29,14 @@
             android:id="@+id/dialogsList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/lonelyText"
+            android:textSize="28sp"
+            android:fontFamily="@font/josefin_sans"
+            android:text="It's a lil lonely here ;("
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 

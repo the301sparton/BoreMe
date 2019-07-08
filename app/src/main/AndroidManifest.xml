@@ -22,7 +22,8 @@
         <activity
             android:name=".Activity_Encrpt"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity_chat" />
+        <activity android:name=".Activity_chat"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".Activity_newConvoPicker"
             android:theme="@style/AppTheme.NoActionBar" />

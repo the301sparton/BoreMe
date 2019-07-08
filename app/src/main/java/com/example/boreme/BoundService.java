@@ -1,15 +1,15 @@
 package com.example.boreme;
-import android.app.Notification;
+import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Chronometer;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -22,6 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
 
 public class BoundService extends Service {
     private static String LOG_TAG = "BoundService";
@@ -48,7 +50,8 @@ public class BoundService extends Service {
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
                         .setContentTitle("New Message")
                         .setContentText("Message is encrypted")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setGroup("newMsgGroup");
 
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -71,7 +74,7 @@ public class BoundService extends Service {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
                 // notificationId is a unique int for each notification that you must define
-                if(i!=0){
+                if(i!=0 && !isAppOnForeground(getApplicationContext())){
                     notificationManager.notify(i, builder.build());
                 }
 
@@ -112,5 +115,21 @@ public class BoundService extends Service {
         BoundService getService() {
             return BoundService.this;
         }
+    }
+
+    private boolean isAppOnForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = "com.example.boreme";
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                //                Log.e("app",appPackageName);
+                return true;
+            }
+        }
+        return false;
     }
 }

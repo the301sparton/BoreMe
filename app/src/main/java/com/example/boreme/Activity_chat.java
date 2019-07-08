@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -97,6 +98,39 @@ public class Activity_chat extends AppCompatActivity {
         inputView = findViewById(R.id.msgBox);
 
 
+        final DatabaseReference typingRef = database.getReference("messages").child(thatUserId).child(currentUser.getUid()).child("typingState");
+        inputView.setTypingListener(new MessageInput.TypingListener() {
+            @Override
+            public void onStartTyping() {
+               typingRef.setValue("true");
+            }
+
+            @Override
+            public void onStopTyping() {
+                typingRef.setValue("false");
+            }
+        });
+
+        final TextView hisTypingState = findViewById(R.id.hisTypingState);
+
+        DatabaseReference hisTypingRef = database.getReference("messages").child(currentUser.getUid()).child(thatUserId).child("typingState");
+        hisTypingRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue(String.class) != null) {
+                    if (dataSnapshot.getValue(String.class).contentEquals("true")) {
+                        hisTypingState.setText("Typing..");
+                    } else {
+                        hisTypingState.setText("");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
         author = new Author();

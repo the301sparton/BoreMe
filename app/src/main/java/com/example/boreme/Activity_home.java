@@ -228,36 +228,50 @@ public class Activity_home extends AppCompatActivity {
                 for (DataSnapshot userConvo : dataSnapshot.getChildren()){
                     String id = userConvo.getKey();
                     Author convoAuthor = userConvo.child("author").child("lol").getValue(Author.class);
-                    String convoName = convoAuthor.getName();
-                    String convoImg = convoAuthor.getAvatar();
-                    ArrayList<IUser> convoUser = new ArrayList<>();
-                    convoUser.add(convoAuthor);
-                    int unReadCount = (int) userConvo.child("messages").getChildrenCount();
+                    if(convoAuthor != null) {
+                        String convoName = convoAuthor.getName();
+                        String convoImg = convoAuthor.getAvatar();
+                        ArrayList<IUser> convoUser = new ArrayList<>();
+                        convoUser.add(convoAuthor);
+                        int unReadCount = (int) userConvo.child("messages").getChildrenCount();
 
-                    for(DataSnapshot thisConvoMsg : userConvo.child("messages").getChildren()){
-                            Log.i("message", String.valueOf(thisConvoMsg));
-                            lastMsg = thisConvoMsg.getValue(Message.class);
+                        for (DataSnapshot thisConvoMsg : userConvo.child("messages").getChildren()) {
+                            if (thisConvoMsg != null) {
+                                lastMsg = thisConvoMsg.getValue(Message.class);
+                                lastMsg.setAuthor(convoAuthor);
+                            }
+                        }
+
+                        if (lastMsg == null) {
+                            lastMsg = new Message();
+                            lastMsg.setCreatedAt(new Date());
+                            lastMsg.setId("1");
                             lastMsg.setAuthor(convoAuthor);
-                    }
-
-                    if(lastMsg == null){
-                        lastMsg = new Message();
-                        lastMsg.setCreatedAt(new Date());
-                        lastMsg.setId("1");
-                        lastMsg.setAuthor(convoAuthor);
-                        lastMsg.setText("No new Message.");
-                        unReadCount = 0;
-                    }
-                    else{
-                        lastMsg.setText("Encrypted MSG: "+lastMsg.getText());
-                    }
+                            lastMsg.setText("No new Message.");
+                            unReadCount = 0;
+                        } else {
+                            lastMsg.setText("Encrypted MSG: " + lastMsg.getText());
+                        }
 
 
-                    DefaultDialog thisDialog = new DefaultDialog(id, convoName, convoImg, lastMsg, convoUser, unReadCount);
-                   // Log.i("convoName", lastMsg.getText());
-                    finalConvoList.add(thisDialog);
+                        DefaultDialog thisDialog = new DefaultDialog(id, convoName, convoImg, lastMsg, convoUser, unReadCount);
+                        // Log.i("convoName", lastMsg.getText());
+                        finalConvoList.add(thisDialog);
+                    }
                 }
-                dialogsListAdapter.setItems(finalConvoList);
+
+                if(finalConvoList.isEmpty()){
+                    //You are lonely
+                    dialogsList.setVisibility(View.GONE);
+                    TextView tv= findViewById(R.id.lonelyText);
+                    tv.setVisibility(View.VISIBLE);
+                }
+                else{
+                    TextView tv= findViewById(R.id.lonelyText);
+                    tv.setVisibility(View.GONE);
+                    dialogsList.setVisibility(View.VISIBLE);
+                    dialogsListAdapter.setItems(finalConvoList);
+                }
                 LinearLayout progressBar = findViewById(R.id.holder);
                 progressBar.setVisibility(View.GONE);
             }
