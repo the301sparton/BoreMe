@@ -16,14 +16,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".Activity_Profile"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".Activity_status"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity_about"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity_Encrpt"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity_chat"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".Activity_chat"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity_newConvoPicker"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -37,10 +43,7 @@
             </intent-filter>
         </activity>
 
-
         <service android:name=".BoundService" />
-
-
     </application>
 
 </manifest>

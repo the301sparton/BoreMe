@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activity_Profile">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/josefin_sans"
+                android:textSize="22sp"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/colorAccent"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="Profile Page"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="20dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/hisProfilePic"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/colorPrimary"
+                android:id="@+id/hisProfileName"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textSize="28sp"
+                android:fontFamily="@font/josefin_sans"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/josefin_sans"
+            android:textSize="24sp"
+            android:padding="15dp"
+            android:textStyle="bold"
+            android:text="Status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <LinearLayout
+            android:layout_marginStart="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0" />
+
+        <TextView
+            android:padding="5dp"
+            android:background="@drawable/curve_radius"
+            android:id="@+id/hisProfileStatus"
+            android:layout_margin="20dp"
+            android:textSize="20sp"
+            android:fontFamily="@font/josefin_sans"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+
+        <TextView
+            android:textColor="@color/colorPrimary"
+            android:fontFamily="@font/josefin_sans"
+            android:textSize="24sp"
+            android:padding="15dp"
+            android:textStyle="bold"
+            android:text="Key Material"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <LinearLayout
+            android:layout_marginStart="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#e0e0e0" />
+
+        <TextView
+            android:padding="5dp"
+            android:id="@+id/hisProfileKey"
+            android:layout_margin="20dp"
+            android:textSize="20sp"
+            android:background="@drawable/curve_radius"
+            android:fontFamily="@font/josefin_sans"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+
+
+
+
+</ScrollView>

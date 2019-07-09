@@ -52,7 +52,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class Activity_home extends AppCompatActivity {
     Message lastMsg;
     CircleImageView meImg;
-    TextView displayName, emailId;
+    TextView displayName, my_status;
     FirebaseDatabase database;
     SharedPreferences preferences;
     FirebaseUser currentUser;
@@ -108,30 +108,13 @@ public class Activity_home extends AppCompatActivity {
 
         meImg = findViewById(R.id.profile_image);
         displayName = findViewById(R.id.displayName);
-        emailId = findViewById(R.id.emailId);
+        my_status = findViewById(R.id.my_statusText);
         dialogsList = findViewById(R.id.dialogsList);
 
         database = FirebaseDatabase.getInstance();
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        Log.v("loginStateOnCreate", String.valueOf(preferences.getBoolean("isSignedIn",false)));
-        List<AuthUI.IdpConfig> providers = Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build());
 
-// Create and launch sign-in intent
-        if (!preferences.getBoolean("isSignedIn", false)) {
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(providers)
-                            .build(),
-                    200);
-        } else {
-            currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            displayName.setText(currentUser.getDisplayName());
-            emailId.setText(currentUser.getEmail());
-            Picasso.get().load(currentUser.getPhotoUrl()).into(meImg);
-            setDialogAdaptor();
-        }
-
+        getViews();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -142,11 +125,36 @@ public class Activity_home extends AppCompatActivity {
         });
     }
 
+    void getViews(){
+        if (!preferences.getBoolean("isSignedIn", false)) {
+            List<AuthUI.IdpConfig> providers = Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build());
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    200);
+        } else {
+            currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            displayName.setText(currentUser.getDisplayName());
+            my_status.setText(preferences.getString("myStatus","I am dumb enough not to change status yet :("));
+            Picasso.get().load(currentUser.getPhotoUrl()).into(meImg);
+            setDialogAdaptor();
+        }
+
+    }
+
     @Override
     protected void onRestart() {
         lastMsg = null;
         setDialogAdaptor();
         super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        getViews();
+        super.onResume();
     }
 
     @Override
@@ -162,8 +170,10 @@ public class Activity_home extends AppCompatActivity {
             startActivity(new Intent(Activity_home.this, Activity_Encrpt.class));
         }
         else if(item.getItemId() == R.id.about){
-            startActivity(new Intent(Activity_home.this, activity_about.class
-            ));
+            startActivity(new Intent(Activity_home.this, activity_about.class));
+        }
+        else if(item.getItemId() == R.id.my_status){
+            startActivity(new Intent(Activity_home.this, Activity_status.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -185,13 +195,13 @@ public class Activity_home extends AppCompatActivity {
                     onStart();
                     Log.i("url", String.valueOf(user.getPhotoUrl()));
                     displayName.setText(user.getDisplayName());
-                    emailId.setText(user.getEmail());
+                    my_status.setText(user.getEmail());
 
                     DatabaseReference meAsUser = database.getReference("users").child(user.getUid());
                     meAsUser.child("displayName").setValue(user.getDisplayName());
                     meAsUser.child("photoURI").setValue(String.valueOf(user.getPhotoUrl()));
                     meAsUser.child("emailId").setValue(user.getEmail());
-
+                    meAsUser.child("my_status").setValue(preferences.getString("myStatus","I am dumb enough not to change status yet :("));
                     Picasso.get().load(user.getPhotoUrl()).into(meImg);
                 }
                 currentUser = user;

@@ -39,6 +39,7 @@
                 android:layout_weight="5"/>
 
             <TextView
+                android:text="Tap To be a Stalker"
                 android:id="@+id/hisTypingState"
                 android:textColor="@color/colorAccent"
                 android:fontFamily="@font/josefin_sans"

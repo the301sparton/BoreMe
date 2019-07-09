@@ -16,9 +16,9 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/my_status"
         android:orderInCategory="100"
-        android:title="Settings"
+        android:title="Change Status"
         app:showAsAction="never" />
 
 </menu>

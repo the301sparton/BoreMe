@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -79,6 +81,7 @@ public class Activity_chat extends AppCompatActivity {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
+        setStatusTapListener();
 
             String keyStr = preferences.getString("myKey","");
             byte[] decodedKey = Base64.decode(keyStr,0);
@@ -213,7 +216,6 @@ public class Activity_chat extends AppCompatActivity {
                 TextView hisName = findViewById(R.id.hisName);
                 hisName.setText(hisKeySnap.child("displayName").getValue(String.class));
 
-Log.i("KEY", hisKeySnap.child("key").getValue(String.class));
 
                 byte[] decodedKey = Base64.decode(hisKeySnap.child("key").getValue(String.class),0);
                 final SecretKey hisSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
@@ -283,13 +285,16 @@ Log.i("KEY", hisKeySnap.child("key").getValue(String.class));
             }
         });
 
+    }
 
-
-
-
-
-
-
+    void setStatusTapListener(){
+        LinearLayout statusBar = findViewById(R.id.titleBar);
+        statusBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Activity_chat.this, Activity_Profile.class).putExtra("hisKey",thatUserId));
+            }
+        });
     }
 
     public static SecretKey generateKey()

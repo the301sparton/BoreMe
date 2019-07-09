@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activity_status">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/josefin_sans"
+            android:textSize="22sp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccent"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="Change Your Status"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:textSize="26dp"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="@font/josefin_sans"
+        android:text="Your Current Status"/>
+    <LinearLayout
+        android:layout_marginStart="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0" />
+
+    <TextView
+        android:id="@+id/currentStatus"
+        android:layout_margin="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:textSize="22dp"
+        android:background="@drawable/curve_radius"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="@font/josefin_sans"
+        android:text=""/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:textSize="26dp"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="@font/josefin_sans"
+        android:text="Your New Status"/>
+    <LinearLayout
+        android:layout_marginStart="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0" />
+
+    <EditText
+        android:id="@+id/newStatus"
+        android:maxLength="300"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:hint="Enter your new status here"/>
+
+    <Button
+        android:id="@+id/statusUpdate"
+        android:textColor="@color/colorPrimary"
+        android:background="@color/colorAccent"
+        android:layout_margin="20dp"
+        android:text="Update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
