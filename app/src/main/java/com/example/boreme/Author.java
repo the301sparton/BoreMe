@@ -1,6 +1,7 @@
 package com.example.boreme;
 
-import com.google.firebase.database.Exclude;
+// Acthor is a class that holds users information
+
 import com.stfalcon.chatkit.commons.models.IUser;
 
 public class Author implements IUser {

@@ -1,3 +1,9 @@
+
+//Service Monitors if user has new message and also sends a notification
+//Responsible to monitor the database
+
+
+
 package com.example.boreme;
 import android.app.ActivityManager;
 import android.app.NotificationChannel;
@@ -20,8 +26,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.List;
+
+
 
 public class BoundService extends Service {
     private static String LOG_TAG = "BoundService";
@@ -36,6 +43,8 @@ public class BoundService extends Service {
         database = FirebaseDatabase.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference ref = database.getReference("messages").child(currentUser.getUid());
+
+        //Add database event listener
         ref.addValueEventListener(new ValueEventListener() {
             int i=0;
             @Override
@@ -44,6 +53,7 @@ public class BoundService extends Service {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
+                //Build notification base
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "NewBoreMe")
                         .setSmallIcon(R.drawable.ic_launcher_foreground)
                         .setContentTitle("New Message")
@@ -52,6 +62,7 @@ public class BoundService extends Service {
                         .setGroup("newMsgGroup");
 
 
+                //if device has a relatively new android version (Oreo Plus) create a notification channel
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     CharSequence name = "BoreMe Channel";
                     String description = "Notification on new messages";
@@ -72,6 +83,7 @@ public class BoundService extends Service {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
                 // notificationId is a unique int for each notification that you must define
+                //Show notification if app is not open
                 if(i!=0 && !isAppOnForeground(getApplicationContext())){
                     notificationManager.notify(i, builder.build());
                 }
@@ -115,6 +127,7 @@ public class BoundService extends Service {
         }
     }
 
+    //function responsible to check if app is in foreground (is open and on users screen)
     private boolean isAppOnForeground(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
