@@ -213,7 +213,7 @@ public class Activity_chat extends AppCompatActivity {
                 TextView hisName = findViewById(R.id.hisName);
                 hisName.setText(hisKeySnap.child("displayName").getValue(String.class));
 
-
+Log.i("KEY", hisKeySnap.child("key").getValue(String.class));
 
                 byte[] decodedKey = Base64.decode(hisKeySnap.child("key").getValue(String.class),0);
                 final SecretKey hisSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");

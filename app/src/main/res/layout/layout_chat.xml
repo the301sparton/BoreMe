@@ -9,6 +9,7 @@
     tools:context=".Activity_chat">
 
     <LinearLayout
+        android:id="@+id/titleBar"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:orientation="horizontal"
@@ -57,6 +58,7 @@
         android:id="@+id/messagesList"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:layout_below="@+id/titleBar"
         android:layout_above="@+id/msgBox" />
 
     <com.stfalcon.chatkit.messages.MessageInput
