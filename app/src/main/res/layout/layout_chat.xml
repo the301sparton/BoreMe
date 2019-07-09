@@ -65,7 +65,7 @@
     <com.stfalcon.chatkit.messages.MessageInput
         android:id="@+id/msgBox"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:inputHint="Enter a message."/>
 </RelativeLayout>

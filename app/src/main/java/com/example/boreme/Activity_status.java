@@ -43,7 +43,7 @@ public class Activity_status extends AppCompatActivity {
                 else{
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (currentUser != null) {
-                        database.getReference("users").child(currentUser.getUid()).child("status").setValue(newStatus.getText().toString());
+                        database.getReference("users").child(currentUser.getUid()).child("my_status").setValue(newStatus.getText().toString());
                         preferences.edit().putString("myStatus",newStatus.getText().toString()).apply();
                         currentStatus.setText(newStatus.getText().toString());
                     }
