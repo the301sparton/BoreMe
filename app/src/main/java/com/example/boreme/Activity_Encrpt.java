@@ -1,5 +1,9 @@
 package com.example.boreme;
 
+//This class is responsible to create display user information about the algorithms and process of encryption
+//It also displays user his 256 bit Key so that he can double check that his messages are end to end encrypted
+
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
@@ -23,7 +27,7 @@ public class Activity_Encrpt extends AppCompatActivity {
         int i = 1;
         for(byte b : toDecode){
             if(i != 256){
-                finality += getStrFromByte(b).concat(" : ");
+                finality += getStrFromByte(b).concat(" : "); //Create key string in binary
             }
             if(i%3 == 0){
                 finality +="\n";
@@ -32,9 +36,11 @@ public class Activity_Encrpt extends AppCompatActivity {
         }
 
         TextView textView = findViewById(R.id.encrptKey);
-        textView.setText(finality);
+        textView.setText(finality); //display key string
     }
 
+
+    //convert byte to binary formatted String
     String getStrFromByte(byte b1){
         String s1 = String.format("%8s", Integer.toBinaryString(b1 & 0xFF)).replace(' ', '0');
         return s1;

@@ -1,5 +1,11 @@
 package com.example.boreme;
 
+
+// Activity responsible for user signIn, and showing list for conversations with new messages
+// Activity also generates a new key if no AES 256 bit key is found
+// Also acts as the UI controller for the main / home screen
+
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +56,8 @@ import javax.crypto.SecretKey;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Activity_home extends AppCompatActivity {
+
+    //Global Variables here
     Message lastMsg;
     CircleImageView meImg;
     TextView displayName, my_status;
@@ -57,13 +65,12 @@ public class Activity_home extends AppCompatActivity {
     SharedPreferences preferences;
     FirebaseUser currentUser;
     DialogsList dialogsList;
-
     BoundService mBoundService;
     boolean mServiceBound = false;
 
 
+    //Bound the notifications service
     private ServiceConnection mServiceConnection = new ServiceConnection() {
-
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mServiceBound = false;
@@ -76,10 +83,11 @@ public class Activity_home extends AppCompatActivity {
             mServiceBound = true;
         }
     };
+
     @Override
     protected void onStart() {
 
-        Log.v("loginState", String.valueOf(preferences.getBoolean("isSignedIn",false)));
+        //start the service if its not previously started and the user is signed-in
         if(preferences.getBoolean("isSignedIn",false) && !mServiceBound) {
             Intent intent = new Intent(this, BoundService.class);
             startService(intent);
@@ -98,24 +106,29 @@ public class Activity_home extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_home);
+
+        //initialise objects;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
-
         meImg = findViewById(R.id.profile_image);
         displayName = findViewById(R.id.displayName);
         my_status = findViewById(R.id.my_statusText);
         dialogsList = findViewById(R.id.dialogsList);
-
         database = FirebaseDatabase.getInstance();
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+
+        //Set UI
         getViews();
 
+
+        //Add click listener to the new convertion button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +177,8 @@ public class Activity_home extends AppCompatActivity {
         return true;
     }
 
+
+    //start different activities for different menu options selected
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.encryption){
@@ -178,6 +193,8 @@ public class Activity_home extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+   //Handle Sign-in result
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -217,6 +234,7 @@ public class Activity_home extends AppCompatActivity {
 
 
 
+    // Set and add conversations to the list
     private void setDialogAdaptor() {
 
         List<DefaultDialog> ConvoList;
@@ -305,6 +323,7 @@ public class Activity_home extends AppCompatActivity {
     }
 
 
+    //create new key if key doesn't exist
     private void genereteNewKey(){
 
         if(preferences.getString("myKey","").contentEquals("")){
