@@ -1,5 +1,10 @@
 package com.example.boreme;
 
+// Class file for chat Activity (The Page In Which You Chat)
+// Responsible for send and receiving Messages.
+// Also Responsible for encrypting and decrypting messages.
+// Please keep your contributions modular.
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,6 +56,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Activity_chat extends AppCompatActivity {
 
+
+    //Declare Global objects / variables here
     SharedPreferences preferences;
     MessagesList messagesList;
     MessageInput inputView;
@@ -60,14 +67,16 @@ public class Activity_chat extends AppCompatActivity {
     FirebaseDatabase database;
     Author thatAuthor;
     SecretKey secretKey;
+    TextView hisTypingState;
     int i=0;
-
     String thatUserId;
 
+
+
+    // This function is triggered when the user presses the back button
     @Override
     public void onBackPressed() {
-        //startActivity(new Intent(Activity_chat.this, Activity_newConvoPicker.class));
-        finish();
+        finish();       //finish the activity and deallocate the memory
         super.onBackPressed();
     }
 
@@ -76,18 +85,22 @@ public class Activity_chat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_chat);
 
+        //Initialize objects here
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         database = FirebaseDatabase.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String keyStr = preferences.getString("myKey","");
+        byte[] decodedKey = Base64.decode(keyStr,0);
+        secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+        messagesList = findViewById(R.id.messagesList);
+        inputView = findViewById(R.id.msgBox);
+        hisTypingState = findViewById(R.id.hisTypingState);
 
 
-        setStatusTapListener();
-
-            String keyStr = preferences.getString("myKey","");
-            byte[] decodedKey = Base64.decode(keyStr,0);
-            secretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+        setStatusTapListener();     //Function responsible to display profile when status bar is clicked
 
 
+        //get data passed from previous activity
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
@@ -99,10 +112,9 @@ public class Activity_chat extends AppCompatActivity {
             thatUserId= (String) savedInstanceState.getSerializable("STRING_I_NEED");
         }
 
-        messagesList = findViewById(R.id.messagesList);
-        inputView = findViewById(R.id.msgBox);
 
 
+        //Start Typing Listener
         final DatabaseReference typingRef = database.getReference("messages").child(thatUserId).child(currentUser.getUid()).child("typingState");
         inputView.setTypingListener(new MessageInput.TypingListener() {
             @Override
@@ -115,11 +127,11 @@ public class Activity_chat extends AppCompatActivity {
                 typingRef.setValue("false");
             }
         });
-
-        final TextView hisTypingState = findViewById(R.id.hisTypingState);
-
+        //End Typing Listener
 
 
+
+        //Start Monitor Typing state of other user
         DatabaseReference hisTypingRef = database.getReference("messages").child(currentUser.getUid()).child(thatUserId).child("typingState");
         hisTypingRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -138,24 +150,32 @@ public class Activity_chat extends AppCompatActivity {
 
             }
         });
+        //End Tying monitor for other user
 
 
-        author = new Author();
-        author.setName(currentUser.getDisplayName());
-        author.setId(currentUser.getUid());
-        author.setAvatar(String.valueOf(currentUser.getPhotoUrl()));
 
+        //Define Image loading process
         ImageLoader imageLoader = new ImageLoader() {
             @Override
             public void loadImage(ImageView imageView, @Nullable String url, @Nullable Object payload) {
-                Picasso.get().load(url).into(imageView);
+                Picasso.get().load(url).into(imageView);        //use Picasso to load image
             }
         };
 
 
+        //Create a new author object and set all fields
+        author = new Author();
+        author.setName(currentUser.getDisplayName());
+        author.setId(currentUser.getUid());
+        author.setAvatar(String.valueOf(currentUser.getPhotoUrl()));
         adapter = new MessagesListAdapter<>(author.getId(), imageLoader);
+
+
+        // set adapter to message list
         messagesList.setAdapter(adapter);
 
+
+        //set listener for message send event
         inputView.setInputListener(new MessageInput.InputListener() {
             @Override
             public boolean onSubmit(CharSequence input) {
@@ -165,24 +185,26 @@ public class Activity_chat extends AppCompatActivity {
                 try {
                     //Encrypted Message
                     cyperText = encryptMsg(String.valueOf(input), secretKey);
-
-                    Message message = new Message();
+                    Message message = new Message();    //Create new Message objects
                     message.setId(String.valueOf(i));
                     message.setText(Base64.encodeToString(cyperText,0));
                     message.setCreatedAt(new Date());
                     message.setAuthor(author);
 
+                    //create new key for the message;
                     DatabaseReference reference = database.getReference("messages").child(thatUserId).child(author.getId());
                     String nxtMsg = reference.push().getKey();
                     if (nxtMsg != null) {
+                        //save encrypted message to database
                         reference.child("messages").child(nxtMsg).setValue(message);
                         reference.child("author").child("lol").setValue(author);
                     }
                     message.setText(String.valueOf(input));
                     adapter.addToStart(message, true);
 
-                    i++;
+                    i++;     //increment id
 
+                    //catch all possible exceptions
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 } catch (NoSuchPaddingException e) {
@@ -207,6 +229,8 @@ public class Activity_chat extends AppCompatActivity {
         //Get His Key
         final DatabaseReference hisKey = database.getReference("users").child(thatUserId);
 
+
+        //Add listener for their messages
         hisKey.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot hisKeySnap) {
@@ -216,7 +240,7 @@ public class Activity_chat extends AppCompatActivity {
                 TextView hisName = findViewById(R.id.hisName);
                 hisName.setText(hisKeySnap.child("displayName").getValue(String.class));
 
-
+                //get other users key
                 byte[] decodedKey = Base64.decode(hisKeySnap.child("key").getValue(String.class),0);
                 final SecretKey hisSecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
 
@@ -236,12 +260,13 @@ public class Activity_chat extends AppCompatActivity {
                                         Message message = new Message();
                                         message.setCreatedAt(dateOfMsg);
                                         message.setId(dataSnap.child("id").getValue(String.class));
-                                        String cypherMsg = dataSnap.child("text").getValue(String.class);
-                                        Log.i("gotMsg",cypherMsg);
-                                        message.setText(decryptMsg(Base64.decode(cypherMsg,0),hisSecretKey));
-                                        message.setAuthor(thatAuthor);
-                                        adapter.addToStart(message,true);
+                                        String cypherMsg = dataSnap.child("text").getValue(String.class);  //Encrypted message received
+                                        message.setText(decryptMsg(Base64.decode(cypherMsg,0),hisSecretKey)); //decrypt message and add to message object
+                                        message.setAuthor(thatAuthor);  //set details of the user who sent the message
+                                        adapter.addToStart(message,true);   // add received message to the UI
 
+
+                                        //catch all possible decryption exceptions
                                     } catch (NoSuchPaddingException e) {
                                         e.printStackTrace();
                                     } catch (NoSuchAlgorithmException e) {
@@ -259,9 +284,8 @@ public class Activity_chat extends AppCompatActivity {
                                     } catch (UnsupportedEncodingException e) {
                                         e.printStackTrace();
                                     }
-
-
                                 }
+                                //remove messages from database when received;
                                 dataSnapshot.getRef().removeValue();
                             }
 
@@ -287,6 +311,8 @@ public class Activity_chat extends AppCompatActivity {
 
     }
 
+
+    // Start activity profile when status-bar is clicked
     void setStatusTapListener(){
         LinearLayout statusBar = findViewById(R.id.titleBar);
         statusBar.setOnClickListener(new View.OnClickListener() {
@@ -297,15 +323,8 @@ public class Activity_chat extends AppCompatActivity {
         });
     }
 
-    public static SecretKey generateKey()
-            throws NoSuchAlgorithmException, InvalidKeySpecException
-    {
-        SecretKey secret;
-        KeyGenerator keygen = KeyGenerator.getInstance("AES");
-        keygen.init(256);
-        return secret = keygen.generateKey();
-    }
 
+    // Function responsible to create encrypted message
     public static byte[] encryptMsg(String message, SecretKey secret)
             throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidParameterSpecException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException
     {
@@ -317,6 +336,8 @@ public class Activity_chat extends AppCompatActivity {
         return cipherText;
     }
 
+
+    //Function responsible to decrypt a given message
     public static String decryptMsg(byte[] cipherText, SecretKey secret)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidParameterSpecException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException
     {
