@@ -68,7 +68,7 @@ public class Activity_newConvoPicker extends AppCompatActivity {
                         currentUser.setUid(Objects.requireNonNull(user.getKey()));
                         currentUser.setDisplayName(Objects.requireNonNull(user.child("displayName").getValue()).toString());
                         currentUser.setPhotoUri(Objects.requireNonNull(user.child("photoURI").getValue()).toString());
-                        currentUser.setEmailId(Objects.requireNonNull(user.child("status").getValue()).toString());
+                        currentUser.setEmailId(Objects.requireNonNull(user.child("my_status").getValue()).toString());
                         list.add(currentUser);
                     }
                 }

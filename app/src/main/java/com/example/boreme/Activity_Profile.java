@@ -53,7 +53,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
                 hisName.setText(dataSnapshot.child("displayName").getValue(String.class));
                 TextView hisKey = findViewById(R.id.hisProfileKey);
                 TextView hisStatus = findViewById(R.id.hisProfileStatus);
-                hisStatus.setText(dataSnapshot.child("status").getValue(String.class));
+                hisStatus.setText(dataSnapshot.child("my_status").getValue(String.class));
 
                 key = dataSnapshot.child("key").getValue(String.class);
 

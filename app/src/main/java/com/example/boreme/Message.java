@@ -1,5 +1,7 @@
 package com.example.boreme;
 
+//A Class that holds information of message and their getter and setter methords
+
 import com.google.firebase.database.Exclude;
 import com.stfalcon.chatkit.commons.models.IMessage;
 
