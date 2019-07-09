@@ -1,5 +1,7 @@
 package com.example.boreme;
 
+//Activity responsible to view and change current user status;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;

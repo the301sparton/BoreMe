@@ -1,5 +1,9 @@
 package com.example.boreme;
 
+//Activity responsible to start new conversations and pick view list of all users
+//This screen houses a listView which will display all users
+
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +36,7 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Activity_newConvoPicker extends AppCompatActivity {
-
+    //Global variables;
     FirebaseDatabase database;
     LinearLayout pg_bar;
     ListView listView;
@@ -43,13 +47,17 @@ public class Activity_newConvoPicker extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_new_convo_picker);
 
+
+        //initialise the variables
         list = new ArrayList<DTO>();
         pg_bar = findViewById(R.id.prog_loader);
         listView = findViewById(R.id.list);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
         database = FirebaseDatabase.getInstance();
         DatabaseReference usersRef = database.getReference("users");
+
+
+        //read data of all users from the server and add them to a ArrayList
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -76,6 +84,7 @@ public class Activity_newConvoPicker extends AppCompatActivity {
         });
     }
 
+    //add click lister to individual list items (in this case users)
      void listViewClickListener(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -88,6 +97,8 @@ public class Activity_newConvoPicker extends AppCompatActivity {
     }
 }
 
+
+// a simple data holder for UI component values
 class DTO implements Serializable{
     private String displayName, photoUri, emailId, uid;
 
@@ -124,11 +135,16 @@ class DTO implements Serializable{
     }
 }
 
+
+//A viewGroup Class for users information
 class ViewHolder {
     public TextView displayName, emailId;
     public CircleImageView displayImg;
 }
 
+
+
+// Adapter to dynamically add items to users list
 class ListAdapter extends BaseAdapter {
 
     ArrayList<DTO> list = new ArrayList<>();

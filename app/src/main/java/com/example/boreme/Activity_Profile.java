@@ -1,5 +1,7 @@
  package com.example.boreme;
 
+//Activity responsible to display users profile, his AES256 bit key and status
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
